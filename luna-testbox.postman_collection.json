@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4da759e8-0e54-440f-b250-af248c4977d1",
+		"_postman_id": "00d605b8-d23e-4ad2-abc7-7d08a30f9f42",
 		"name": "luna-testbox",
 		"description": "The test-box allows to create various cases fro auto-testing project.\nversion 1\n- create base code of framework",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -28,30 +28,25 @@
 					"script": {
 						"id": "557eb28b-ee22-485c-a37d-54e3af7ea367",
 						"exec": [
-							"//получаем тело ответа в формате JSON",
-							"var json = pm.response.json();",
-							"",
-							"//переменные для хранения логина",
-							"var user;",
-							"",
-							"//след. запрос из коллекции",
-							"var nextRequest = null;",
-							"",
-							"//получаем host тестового сервереа и формируем url",
+							"//объявляем переменные",
 							"var url = 'http://' + pm.environment.get('host') + '/login';",
+							"var login = pm.variables.get('login');",
 							"",
-							"//получаем токен из тела ответа",
+							"var json = pm.response.json();",
 							"var csrf = json.data.csrf;",
 							"",
-							"if (csrf) {",
-							" //сохраняем токен в глоб. контекст",
-							" pm.globals.set('csrf', csrf);",
-							" ",
-							" //получаем идентификатор авто-теста",
-							" var test_id = pm.variables.get('test_id');",
-							"}",
+							"var nextRequest = null;",
 							"",
-							"//отладочный блок",
+							"//получаем идентификатор авто-теста",
+							"test_id = pm.variables.get('test_id');",
+							"",
+							"if (csrf) ",
+							"    //сохраняем токен на глоб. уровне",
+							"    pm.globals.set('csrf', csrf);",
+							"else",
+							"    console.log('Tocken was not got rom Back');",
+							"",
+							"//отладочный блок по выводу информации в консоль",
 							"if (pm.variables.get('debug')) {",
 							"    console.log('url: ' + url);",
 							"    console.log('значение токена: ' + csrf);",
@@ -60,77 +55,19 @@
 							"",
 							"//определяем id автотеста",
 							"switch (test_id) {",
-							"    case 'AT01-01':",
-							"    case 'AT01-04':",
-							"    case 'AT01-05':",
-							"    case 'AT01-06':",
-							"    case 'AT01-07':",
-							"    case 'AT01-08':",
-							"    case 'AT01-09':",
-							"    case 'AT01-13':",
-							"        //получаем логин пользователя",
-							"        user = pm.variables.get('frst_user');",
-							"        ",
-							"        //определяем след. запрос из коллекции",
-							"        nextRequest = 'natural-person';",
-							"        break;",
-							"    ",
-							"    case 'AT01-02':",
-							"    case 'AT01-03':",
-							"    case 'AT01-10':",
-							"    case 'AT01-11':",
-							"    case 'AT01-12':",
-							"    case 'AT01-14':",
-							"    case 'AT02-02':",
-							"    case 'AT03-02':",
-							"        //получаем логин пользователя",
-							"        user = pm.variables.get('frst_user');",
-							"        ",
+							"    case 'TC-04.01':",
 							"        //определяем след. запрос из коллекции",
 							"        nextRequest = 'profile';",
-							"        break;",
-							"    ",
-							"    case 'AT02-01':",
-							"    case 'AT02-03':",
-							"        //получаем логин пользователя",
-							"        user = pm.variables.get('frst_user');",
-							"        ",
-							"        //определяем след. запрос из коллекции",
-							"        nextRequest = 'legal-entity';",
-							"        break;",
-							"    ",
-							"    case 'AT03-01':",
-							"        //получаем логин пользователя",
-							"        user = pm.variables.get('frst_user');",
-							"        ",
-							"        //определяем след. запрос из коллекции",
-							"        nextRequest = 'sole-proprietor';",
-							"        break;",
-							"    ",
-							"    case 'AT04-01':",
-							"    case 'AT04-02':",
-							"    case 'AT04-03':",
-							"    case 'AT04-04':",
-							"        //получаем логин пользователя",
-							"        user = pm.variables.get('frst_user');",
-							"        ",
-							"        //определяем след. запрос из коллекции",
-							"        nextRequest = 'create';",
 							"        break;",
 							"        ",
 							"    default:",
 							"        //выводим сообщение об ошибке",
 							"        console.log('[ERROR]: авто-тест ' + test_id + ' не определен');",
-							"        ",
-							"        //зануляем все ключевые переменные",
-							"        test_id = null;",
-							"        user = null;",
 							"        break; ",
 							"}",
 							"",
 							"//отладочный блок",
 							"if (pm.variables.get('debug')) {",
-							"    console.log('логин: ' + user);",
 							"    console.log('след. запрос: ' + nextRequest);",
 							"}",
 							"",
@@ -152,7 +89,7 @@
 							"        },",
 							"        body: {",
 							"            mode: 'raw',",
-							"            raw:  JSON.stringify({\"login\": user, ",
+							"            raw:  JSON.stringify({\"login\": login, ",
 							"                                  \"password\":\"qwerty\",",
 							"                                  \"csrf\":csrf})",
 							"        }",
@@ -160,12 +97,10 @@
 							"    ",
 							"    //отправляем асинхронный запрос login",
 							"    pm.sendRequest(loginRequest, function (err, res) {",
-							"        console.log(err ? err :res.json());})",
-							";}",
-							"",
-							"//переходим к след. запросу из коллекции",
-							"if (nextRequest) {",
-							"   postman.setNextRequest(nextRequest); ",
+							"        console.log(err ? err :res.json());});",
+							"    ",
+							"    //переходим к след. запросу из коллекции",
+							"    postman.setNextRequest(nextRequest); ",
 							"}"
 						],
 						"type": "text/javascript"
@@ -228,7 +163,7 @@
 			"response": []
 		},
 		{
-			"name": "profile",
+			"name": "get_profile",
 			"event": [
 				{
 					"listen": "test",
@@ -255,11 +190,6 @@
 							"//определяем дальнейшую логику авто-теста",
 							"switch (test_id) {",
 							"    case 'AT01-02':",
-							"    case 'AT01-03':",
-							"    case 'AT01-10':",
-							"    case 'AT01-11':",
-							"    case 'AT01-12':",
-							"    case 'AT01-14':",
 							"        var natural_person_id; /*id физ.лица*/",
 							"        var haveNaturalPerson; /*флаг наличия физ.лица*/",
 							"        ",
@@ -514,6 +444,9 @@
 					}
 				}
 			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [
@@ -565,6 +498,74 @@
 					]
 				},
 				"description": "Allows to get info about user"
+			},
+			"response": []
+		},
+		{
+			"name": "post_profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "97d7ea78-cb9a-4982-afa6-5ed303e3fc11",
+						"exec": [
+							"//объявляем переменные",
+							"var url = 'http://' + pm.environment.get('host') + '/login';",
+							"var login = pm.variables.get('login');",
+							"",
+							"var json = pm.response.json();",
+							"var csrf = json.data.csrf;",
+							"",
+							"var nextRequest = null;",
+							"",
+							"//получаем идентификатор авто-теста",
+							"test_id = pm.variables.get('test_id');",
+							"",
+							"//отладочный блок по выводу информации в консоль",
+							"if (pm.variables.get('debug')) console.log('ид автотеста: ' + test_id);",
+							"",
+							"//определяем id автотеста",
+							"switch (test_id) {",
+							"    case 'TC-04.01':",
+							"        ",
+							"        ",
+							"        break;",
+							"        ",
+							"    default:",
+							"        //выводим сообщение об ошибке",
+							"        console.log('[ERROR]: авто-тест ' + test_id + ' не определен');",
+							"        break; ",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/javascript",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"csrf\":\"{{csrf}}\"\n,\"name\":\"{{name}}\"}"
+				},
+				"url": {
+					"raw": "http://{{host}}/profile",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"profile"
+					]
+				},
+				"description": "Allows send some changes in the user profile to Back-end"
 			},
 			"response": []
 		},
@@ -1138,6 +1139,32 @@
 					"});"
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"id": "4b9d4d6f-3be8-4e76-917b-50631ee63791",
+			"key": "test_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "aa1f928b-cbbc-4123-914d-6d675cff316e",
+			"key": "test_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "68674c2a-226e-4705-9561-a1e790e225d6",
+			"key": "login",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "8c904faf-4d64-4291-8689-b8f7a6f69d01",
+			"key": "name",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
