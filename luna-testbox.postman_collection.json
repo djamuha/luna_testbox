@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "00d605b8-d23e-4ad2-abc7-7d08a30f9f42",
+		"_postman_id": "7a4b6382-d1e9-4074-9de5-3bb3cdfffe56",
 		"name": "luna-testbox",
 		"description": "The test-box allows to create various cases fro auto-testing project.\nversion 1\n- create base code of framework",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -55,9 +55,9 @@
 							"",
 							"//определяем id автотеста",
 							"switch (test_id) {",
-							"    case 'TC-04.01':",
+							"    case 'AT01-01':",
 							"        //определяем след. запрос из коллекции",
-							"        nextRequest = 'profile';",
+							"        nextRequest = 'create';",
 							"        break;",
 							"        ",
 							"    default:",
@@ -1008,6 +1008,198 @@
 			]
 		},
 		{
+			"name": "create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d55e8a0b-b214-4c43-bf1a-1b6cbfad2761",
+						"exec": [
+							"//получаем тело ответа в формате JSON",
+							"var json = pm.response.json();",
+							"",
+							"var nextRequest; /*след. запрос из коллекции*/",
+							"",
+							"//результат теста - по умолчанию равен 'Failed'",
+							"var testResult = 'Fail';",
+							"",
+							"//получаем идентификатор авто-теста",
+							"var test_id = pm.variables.get('test_id');",
+							"",
+							"//отладочный блок",
+							"if (pm.variables.get('debug')) {",
+							"    console.log('ид автотеста: ' + test_id);",
+							"}",
+							"",
+							"//определяем дальнейшую логику для авто-теста",
+							"switch (test_id) {",
+							"    case 'AT01-01':",
+							"        //проверка сведений по добавленному объявлению в теле ответа",
+							"        pm.test(\"response body contains added product\", function () {",
+							"            //pm.expect(json.data.naturalPerson.first_name).to.eql(pm.variables.get('first_name'));",
+							"            ",
+							"            ",
+							"            //Pass - если все assertions успешно прошли + комментарий",
+							"            testResult = 'Pass';",
+							"            testComment = 'The product was added successfuly';",
+							"        });",
+							"        ",
+							"        //определяем след. запрос из коллекции",
+							"        nextRequest = 'post_product';",
+							"        break;",
+							"    ",
+							"    default:",
+							"        //выводим сообщение об ошибке",
+							"        console.log('[ERROR]: авто-тест ' + test_id + ' не определен');",
+							"        ",
+							"        //зануляем ключевые переменные",
+							"        test_id = null;",
+							"        testResult = null;",
+							"        break;",
+							"}",
+							"",
+							"",
+							"//переходим к след. запросу из коллекции",
+							"if (nextRequest) {",
+							"   postman.setNextRequest(nextRequest); ",
+							"}",
+							"",
+							"if (testResult == 'Fail') {",
+							"    //выводим в лог сведения о неуспешности выполнения кейса",
+							"    console.log('[ERROR]: ' + pm.variables.get('test_id') + '.' + pm.variables.get('test_name') + ' was failed');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "accept-encoding",
+						"value": "gzip, deflate",
+						"type": "text"
+					},
+					{
+						"key": "accept-language",
+						"value": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
+						"type": "text"
+					},
+					{
+						"key": "cache-control",
+						"value": "no-cache",
+						"type": "text"
+					},
+					{
+						"key": "connection",
+						"value": "keep-alive",
+						"type": "text"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
+						"type": "text"
+					},
+					{
+						"key": "x-requested-with",
+						"value": "XMLHttpRequest",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/javascript",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"csrf\":\"{{csrf}}\"\n,\"categoryId\":\"{{categoryID}}\"\n,\"subcategoryId\":\"{{subcategory}}\"\n,\"name\":\"{{name}}\"\n,\"price\":\"{{price}}\"\n,\"description\":\"{{description}}\"\n,\"safe_deal\":\"{{safe_deal}}\"\n,\"address\":\n\t{\"country\":\"{{country}}\"\n\t,\"region\":\"{{region}}\"\n\t,\"city\":\"{{city}}\"\n\t,\"street\":\"{{street}}\"\n\t,\"house\":\"{{house}}\"\n\t,\"index\":\"{{index}}\"\n\t,\"longitude\":\"{{longitude}}\"\n\t,\"latitude\":\"{{latitude}}\"\n\t,\"lat\":\"{{lat}}\"\n\t,\"lng\":\"{{lng}}\"\n\t}\n,\"category\":\"{{category}}\"\n}"
+				},
+				"url": {
+					"raw": "http://{{host}}/product/create",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"product",
+						"create"
+					]
+				},
+				"description": "Allows to create new product"
+			},
+			"response": []
+		},
+		{
+			"name": "post_product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "accept-encoding",
+						"value": "gzip, deflate",
+						"type": "text"
+					},
+					{
+						"key": "accept-language",
+						"value": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
+						"type": "text"
+					},
+					{
+						"key": "cache-control",
+						"value": "no-cache",
+						"type": "text"
+					},
+					{
+						"key": "connection",
+						"value": "keep-alive",
+						"type": "text"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
+						"type": "text"
+					},
+					{
+						"key": "x-requested-with",
+						"value": "XMLHttpRequest",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/javascript",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"csrf\":\"{{csrf}}\"\n,\"preview_product_confirm\":\"1\"\n}"
+				},
+				"url": {
+					"raw": "http://{{host}}/product",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "logout",
 			"event": [
 				{
@@ -1143,26 +1335,128 @@
 	],
 	"variable": [
 		{
-			"id": "4b9d4d6f-3be8-4e76-917b-50631ee63791",
+			"id": "db579d8e-c3f3-46a3-a75e-084cf41aa374",
 			"key": "test_id",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "aa1f928b-cbbc-4123-914d-6d675cff316e",
+			"id": "bea4ad42-a7fa-4ae8-a4b5-3a9be66fcfdf",
 			"key": "test_name",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "68674c2a-226e-4705-9561-a1e790e225d6",
+			"id": "2b15985f-591a-49b5-b33a-c837f2e984b7",
 			"key": "login",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "8c904faf-4d64-4291-8689-b8f7a6f69d01",
+			"id": "5b1b95a1-4b51-4102-883c-4b403359d6f9",
 			"key": "name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d83db384-19f3-4247-8773-ec13d9f762f3",
+			"key": "categoryID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "a59e5a05-646c-4faa-b307-999fb29de65b",
+			"key": "subcategory",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "a7b9417e-8bb3-44c4-8dea-8e0133edd7fb",
+			"key": "price",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "7efc4156-0f8e-4ac0-ae8c-62d0ff67306b",
+			"key": "description",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "7a0d880a-3fb1-4f25-a86f-66cdb38dbbee",
+			"key": "safe_deal",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "eb98f6de-7b50-4724-b9ae-f15d02fed210",
+			"key": "country",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "5db73fa3-eff4-4f53-942e-d3460c07174f",
+			"key": "region",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "4058182e-70dc-4821-b31a-e75fae74fb71",
+			"key": "city",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "e6b83594-e664-4ec9-8ec1-bb841c98a7cf",
+			"key": "street",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "7dcd6bd3-94dd-48b4-bf3b-8f6f30a946cb",
+			"key": "house",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "4d20644b-503b-41f6-9517-64ef312a0856",
+			"key": "index",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "036be170-74cb-40eb-9683-46ff044b1ad7",
+			"key": "longitude",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "ddf11ecc-b0a6-48df-8d68-3109e36e9bab",
+			"key": "latitude",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "b88450f3-2d05-4eda-95cc-cb7bf1eaf459",
+			"key": "lat",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "50659b43-859e-4624-b24a-f4936d438310",
+			"key": "lng",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "f410be81-ff96-4077-9287-4c71a1059421",
+			"key": "category",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "cc99256d-c423-45bd-9755-0ceb6c051f6e",
+			"key": "debug",
 			"value": "",
 			"type": "string"
 		}
